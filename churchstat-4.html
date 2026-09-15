@@ -1,0 +1,3140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChurchStat</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --red:#e50914;
+    --red-dark:#c40711;
+    --ink:#131313;
+    --ink-soft:#4a4a4a;
+    --line:#e9e9e9;
+    --paper:#ffffff;
+    --floor:#f7f7f7;
+    --radius-lg:18px;
+    --radius-md:13px;
+    --radius-sm:10px;
+    --ease:cubic-bezier(.22,.9,.32,1);
+    --accent-tint:#fdeeee;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',Arial,Helvetica,sans-serif;
+    -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,.brand,.app-brand,.auth-title,.form-title,.page-title,.detail-number,.total-box strong{
+    font-family:'Manrope',Arial,sans-serif;
+}
+
+button,input{
+    font:inherit;
+    color:inherit;
+}
+
+button{
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .15s var(--ease),opacity .15s var(--ease),background-color .15s var(--ease);
+}
+
+button:active{
+    transform:scale(.97);
+}
+
+@media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* fondu d'entrée : un seul moment orchestré, à chaque changement d'écran */
+.page-enter{
+    animation:pageEnter .42s var(--ease);
+}
+
+@keyframes pageEnter{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+/* =========================
+   SPLASH
+========================= */
+
+#splash{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.splash-bg-top,
+.splash-bg-bottom{
+    position:absolute;
+    width:130%;
+    height:180px;
+    background:var(--ink);
+    opacity:.5;
+}
+
+.splash-bg-top{
+    top:-125px;
+    left:-15%;
+    transform:rotate(-12deg);
+}
+
+.splash-bg-bottom{
+    bottom:-125px;
+    right:-15%;
+    transform:rotate(-12deg);
+}
+
+.splash-bg-top:after,
+.splash-bg-bottom:after{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:6px;
+    background:var(--red);
+}
+
+.splash-bg-top:after{
+    bottom:-6px;
+}
+
+.splash-bg-bottom:after{
+    top:-6px;
+}
+
+.splash-content{
+    position:relative;
+    z-index:2;
+    width:90%;
+    max-width:430px;
+    text-align:center;
+}
+
+.splash-logo-wrapper{
+    width:150px;
+    height:150px;
+    margin:auto;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    animation:logoEntrance 1s var(--ease);
+}
+
+.splash-logo-wrapper:before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border:2px solid var(--red);
+    border-radius:50%;
+    animation:ringSpin 2.2s linear infinite;
+}
+
+.splash-logo{
+    width:104px;
+    height:104px;
+    object-fit:contain;
+    position:relative;
+    z-index:2;
+    border-radius:50%;
+    background:#fff;
+    padding:8px;
+}
+
+.splash-title{
+    margin-top:26px;
+    font-size:32px;
+    font-weight:800;
+    letter-spacing:-.5px;
+    color:#fff;
+    animation:titleEntrance .8s var(--ease) .1s both;
+}
+
+.splash-title span{
+    color:var(--red);
+}
+
+.splash-subtitle{
+    margin-top:8px;
+    color:#9a9a9a;
+    font-size:13px;
+    line-height:1.5;
+    animation:titleEntrance .8s var(--ease) .2s both;
+}
+
+.loading{
+    margin-top:30px;
+}
+
+.loading-text{
+    font-size:10px;
+    letter-spacing:2.5px;
+    color:#767676;
+}
+
+.loading-bar{
+    width:180px;
+    height:3px;
+    margin:12px auto 0;
+    background:#2a2a2a;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.loading-progress{
+    width:0;
+    height:100%;
+    background:var(--red);
+    animation:loading 2.2s var(--ease) forwards;
+}
+
+@keyframes logoEntrance{
+    from{opacity:0;transform:scale(.85);}
+    to{opacity:1;transform:scale(1);}
+}
+
+@keyframes ringSpin{
+    from{transform:rotate(0);}
+    to{transform:rotate(360deg);}
+}
+
+@keyframes titleEntrance{
+    from{opacity:0;transform:translateY(12px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+@keyframes loading{
+    from{width:0;}
+    to{width:100%;}
+}
+
+/* =========================
+   ACCUEIL
+========================= */
+
+#home{
+    min-height:100vh;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+    background:var(--paper);
+}
+
+.home-content{
+    width:100%;
+    max-width:400px;
+    text-align:center;
+}
+
+.logo{
+    width:88px;
+    height:88px;
+    object-fit:contain;
+    margin:auto;
+}
+
+.brand{
+    margin-top:18px;
+    font-size:34px;
+    font-weight:800;
+    letter-spacing:-1px;
+}
+
+.brand span{
+    color:var(--red);
+}
+
+.slogan{
+    color:var(--ink-soft);
+    line-height:1.6;
+    margin-top:10px;
+    font-size:15px;
+}
+
+.primary-btn{
+    width:100%;
+    border:none;
+    background:var(--red);
+    color:#fff;
+    padding:16px;
+    border-radius:var(--radius-sm);
+    margin-top:30px;
+    font-weight:700;
+    font-size:15px;
+}
+
+.primary-btn:active{
+    background:var(--red-dark);
+}
+
+.secondary-btn{
+    width:100%;
+    border:1.5px solid var(--ink);
+    background:var(--paper);
+    color:var(--ink);
+    padding:14.5px;
+    border-radius:var(--radius-sm);
+    margin-top:12px;
+    font-weight:700;
+    font-size:15px;
+}
+
+.secondary-btn:active{
+    background:var(--floor);
+}
+
+/* =========================
+   AUTH
+========================= */
+
+.auth-page{
+    min-height:100vh;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:22px;
+    background:var(--paper);
+}
+
+.auth-box{
+    width:100%;
+    max-width:420px;
+}
+
+.auth-logo{
+    width:72px;
+    height:72px;
+    object-fit:contain;
+    display:block;
+    margin:0 auto 16px;
+}
+
+.auth-title{
+    text-align:center;
+    font-size:25px;
+    font-weight:800;
+}
+
+.auth-subtitle{
+    text-align:center;
+    color:var(--ink-soft);
+    margin:6px 0 24px;
+    font-size:14px;
+}
+
+.form-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:22px;
+}
+
+.field{
+    margin-bottom:16px;
+}
+
+.field label{
+    display:block;
+    font-size:12.5px;
+    font-weight:700;
+    margin-bottom:7px;
+    color:var(--ink-soft);
+}
+
+.field input{
+    width:100%;
+    padding:13px 14px;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-sm);
+    outline:none;
+    background:var(--paper);
+    font-size:15px;
+    transition:border-color .15s var(--ease);
+}
+
+.field input:focus{
+    border-color:var(--red);
+}
+
+.logo-upload{
+    border:1.5px dashed #d6d6d6;
+    padding:18px;
+    border-radius:var(--radius-md);
+    text-align:center;
+    margin-bottom:16px;
+}
+
+.logo-preview{
+    width:80px;
+    height:80px;
+    object-fit:contain;
+    display:none;
+    margin:0 auto 10px;
+    border-radius:50%;
+}
+
+.upload-button{
+    display:inline-block;
+    background:var(--ink);
+    color:#fff;
+    padding:10.5px 16px;
+    border-radius:var(--radius-sm);
+    font-size:13px;
+    font-weight:700;
+}
+
+.logo-upload input{
+    display:none;
+}
+
+.small-link{
+    border:none;
+    background:none;
+    color:var(--red);
+    font-weight:700;
+    display:block;
+    margin:18px auto 0;
+    font-size:14px;
+}
+
+/* =========================
+   PALETTE DE COULEURS
+========================= */
+
+.palette-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:9px;
+    margin-bottom:18px;
+}
+
+.palette-swatch{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:11px 12px;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-sm);
+    background:var(--paper);
+    text-align:left;
+}
+
+.palette-swatch.active{
+    border-color:var(--red);
+    background:var(--accent-tint);
+}
+
+.palette-dots{
+    display:flex;
+    flex-shrink:0;
+}
+
+.palette-dots span{
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    border:1.5px solid rgba(0,0,0,.08);
+    margin-left:-5px;
+}
+
+.palette-dots span:first-child{
+    margin-left:0;
+}
+
+.palette-name{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.25;
+}
+
+/* =========================
+   APPLICATION
+========================= */
+
+.app-page{
+    display:none;
+    min-height:100vh;
+    background:var(--floor);
+}
+
+.topbar{
+    height:64px;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.topbar-content{
+    width:100%;
+    max-width:1000px;
+    margin:auto;
+    padding:0 17px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.app-brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:18px;
+    font-weight:800;
+}
+
+.app-brand img{
+    width:34px;
+    height:34px;
+    object-fit:contain;
+    border-radius:50%;
+}
+
+.app-brand span{
+    color:var(--red);
+}
+
+.menu-button{
+    width:40px;
+    height:40px;
+    border:none;
+    background:var(--ink);
+    color:#fff;
+    border-radius:var(--radius-sm);
+    font-size:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* =========================
+   MENU
+========================= */
+
+.menu-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    z-index:100;
+}
+
+.side-menu{
+    width:280px;
+    max-width:85%;
+    height:100%;
+    background:var(--paper);
+    margin-left:auto;
+    padding:22px 16px;
+    animation:menuSlide .3s var(--ease);
+}
+
+@keyframes menuSlide{
+    from{transform:translateX(24px);opacity:.6;}
+    to{transform:translateX(0);opacity:1;}
+}
+
+.menu-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:14px;
+}
+
+.menu-church{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.menu-church img{
+    width:44px;
+    height:44px;
+    object-fit:contain;
+    border-radius:50%;
+}
+
+.menu-church strong{
+    font-size:15px;
+    font-weight:700;
+}
+
+.menu-church small{
+    display:block;
+    color:var(--ink-soft);
+    margin-top:2px;
+    font-size:12px;
+}
+
+.close-menu{
+    width:36px;
+    height:36px;
+    border:none;
+    background:var(--floor);
+    border-radius:var(--radius-sm);
+    font-size:18px;
+}
+
+.menu-item{
+    width:100%;
+    padding:14px;
+    border:none;
+    background:var(--paper);
+    text-align:left;
+    border-radius:var(--radius-sm);
+    margin-bottom:3px;
+    font-weight:600;
+    font-size:14.5px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.menu-item.active{
+    background:var(--accent-tint);
+    color:var(--red);
+}
+
+/* =========================
+   CONTENU
+========================= */
+
+.content{
+    max-width:1000px;
+    margin:auto;
+    padding:22px 17px 60px;
+}
+
+.church-header{
+    background:var(--paper);
+    border-radius:var(--radius-lg);
+    padding:18px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    border:1px solid var(--line);
+    margin-bottom:20px;
+}
+
+.church-header img{
+    width:60px;
+    height:60px;
+    object-fit:contain;
+    border-radius:50%;
+}
+
+.church-header small{
+    color:var(--ink-soft);
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:.4px;
+}
+
+.church-header h1{
+    font-size:20px;
+    margin-top:3px;
+    font-weight:800;
+}
+
+.page-title{
+    font-size:26px;
+    margin-bottom:6px;
+    font-weight:800;
+}
+
+.page-description{
+    color:var(--ink-soft);
+    margin-bottom:20px;
+    font-size:14.5px;
+}
+
+.new-button{
+    width:100%;
+    border:none;
+    background:var(--red);
+    color:#fff;
+    padding:16px;
+    border-radius:var(--radius-md);
+    font-weight:700;
+    margin-bottom:20px;
+    font-size:15px;
+}
+
+.new-button:active{
+    background:var(--red-dark);
+}
+
+/* =========================
+   CULTES
+========================= */
+
+.services-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.service-card{
+    background:var(--paper);
+    padding:16px;
+    border-radius:var(--radius-md);
+    border:1px solid var(--line);
+    transition:border-color .15s var(--ease),transform .1s var(--ease);
+}
+
+.service-card:active{
+    transform:scale(.99);
+    border-color:#d8d8d8;
+}
+
+.service-card-header{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.service-card h3{
+    font-size:16.5px;
+    margin-bottom:5px;
+    font-weight:700;
+}
+
+.service-date{
+    color:var(--ink-soft);
+    font-size:12.5px;
+}
+
+.service-arrow{
+    font-size:22px;
+    color:var(--red);
+    line-height:1;
+}
+
+.service-info{
+    margin-top:12px;
+    padding-top:11px;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    color:var(--ink-soft);
+    font-size:12px;
+}
+
+.service-info strong{
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+}
+
+.empty-state{
+    background:var(--paper);
+    border:1px dashed #d8d8d8;
+    border-radius:var(--radius-md);
+    padding:44px 20px;
+    text-align:center;
+    color:var(--ink-soft);
+}
+
+.empty-state h3{
+    color:var(--ink);
+    font-size:16px;
+    margin-top:4px;
+}
+
+.empty-state p{
+    margin-top:6px;
+    font-size:13.5px;
+}
+
+/* =========================
+   FORMULAIRE
+========================= */
+
+.back-button{
+    border:none;
+    background:none;
+    font-weight:700;
+    margin-bottom:18px;
+    font-size:14px;
+    color:var(--ink);
+}
+
+.form-title{
+    font-size:26px;
+    margin-bottom:6px;
+    font-weight:800;
+}
+
+.section-title{
+    font-size:15.5px;
+    margin:24px 0 14px;
+    font-weight:700;
+    color:var(--ink);
+}
+
+.theme-info{
+    background:var(--floor);
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:12px 14px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.6;
+    margin-bottom:6px;
+}
+
+.theme-info strong{
+    color:var(--ink);
+}
+
+.two-columns,
+.number-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.total-box{
+    background:var(--ink);
+    color:#fff;
+    padding:18px;
+    text-align:center;
+    border-radius:var(--radius-md);
+    margin:18px 0;
+}
+
+.total-box small{
+    color:#a8a8a8;
+    font-size:11px;
+    letter-spacing:1.5px;
+    font-weight:600;
+}
+
+.total-box strong{
+    display:block;
+    font-size:32px;
+    margin-top:4px;
+    font-variant-numeric:tabular-nums;
+}
+
+.save-button{
+    width:100%;
+    border:none;
+    background:var(--red);
+    color:#fff;
+    padding:16px;
+    border-radius:var(--radius-md);
+    font-weight:700;
+    font-size:15px;
+}
+
+.save-button:active{
+    background:var(--red-dark);
+}
+
+/* =========================
+   DETAIL
+========================= */
+
+.detail-header{
+    background:var(--ink);
+    color:white;
+    border-radius:var(--radius-lg);
+    padding:22px;
+    margin-bottom:14px;
+    position:relative;
+    overflow:hidden;
+}
+
+.detail-header:after{
+    content:"";
+    position:absolute;
+    width:150px;
+    height:150px;
+    border:28px solid var(--red);
+    border-radius:50%;
+    right:-85px;
+    top:-75px;
+    opacity:.9;
+}
+
+.detail-header-content{
+    position:relative;
+    z-index:2;
+}
+
+.detail-logo{
+    width:56px;
+    height:56px;
+    object-fit:contain;
+    background:white;
+    border-radius:50%;
+    padding:5px;
+    margin-bottom:14px;
+}
+
+.detail-header small{
+    color:#c9c9c9;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:.4px;
+}
+
+.detail-header h1{
+    font-size:24px;
+    margin:6px 0;
+    font-weight:800;
+}
+
+.detail-header p{
+    color:#d6d6d6;
+    font-size:13px;
+}
+
+.preacher{
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid #2c2c2c;
+}
+
+.preacher-label{
+    font-size:10.5px;
+    color:#999;
+    letter-spacing:1px;
+    font-weight:600;
+}
+
+.preacher-name{
+    margin-top:4px;
+    font-size:17px;
+    font-weight:700;
+}
+
+.detail-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.detail-card{
+    background:var(--paper);
+    padding:16px;
+    border-radius:var(--radius-md);
+    border:1px solid var(--line);
+}
+
+.detail-card.full{
+    grid-column:1/-1;
+}
+
+.detail-card-title{
+    color:var(--ink-soft);
+    font-size:12.5px;
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+.detail-number{
+    font-size:26px;
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+}
+
+.detail-row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+}
+
+.detail-row:last-child{
+    border-bottom:none;
+}
+
+.detail-row span{
+    color:var(--ink-soft);
+}
+
+.detail-row strong{
+    font-variant-numeric:tabular-nums;
+}
+
+.pdf-button{
+    width:100%;
+    border:1.5px solid var(--ink);
+    background:var(--paper);
+    color:var(--ink);
+    padding:15px;
+    border-radius:var(--radius-md);
+    font-weight:700;
+    font-size:14.5px;
+    margin-top:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+}
+
+.pdf-button:active{
+    background:var(--floor);
+}
+
+.pdf-button svg{
+    width:17px;
+    height:17px;
+    flex-shrink:0;
+}
+
+.action-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:10px;
+}
+
+.edit-button{
+    border:none;
+    background:var(--red);
+    color:#fff;
+    padding:15px;
+    border-radius:var(--radius-sm);
+    font-weight:700;
+    font-size:14px;
+}
+
+.edit-button:active{
+    background:var(--red-dark);
+}
+
+.delete-button{
+    border:none;
+    background:var(--ink);
+    color:#fff;
+    padding:15px;
+    border-radius:var(--radius-sm);
+    font-weight:700;
+    font-size:14px;
+}
+
+/* =========================
+   DESKTOP
+========================= */
+
+@media(min-width:700px){
+
+    .new-button{
+        width:auto;
+        padding-left:25px;
+        padding-right:25px;
+    }
+
+    .detail-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+
+    .detail-card.full{
+        grid-column:1/-1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ==================================================
+     SPLASH
+================================================== -->
+
+<section id="splash">
+
+    <div class="splash-bg-top"></div>
+    <div class="splash-bg-bottom"></div>
+
+    <div class="splash-content">
+
+        <div class="splash-logo-wrapper">
+
+            <img
+                id="splashLogo"
+                class="splash-logo"
+                src="logo-eglise.png"
+                alt="Logo de l'église"
+                onerror="this.style.display='none';"
+            >
+
+        </div>
+
+        <div class="splash-title">
+            Church<span>Stat</span>
+        </div>
+
+        <p class="splash-subtitle">
+            Les statistiques de vos cultes,<br>
+            simplement et professionnellement.
+        </p>
+
+        <div class="loading">
+
+            <div class="loading-text">
+                CHARGEMENT
+            </div>
+
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     ACCUEIL
+================================================== -->
+
+<section id="home">
+
+    <div class="home-content">
+
+        <img
+            id="homeLogo"
+            class="logo"
+            src="logo-eglise.png"
+            alt="Logo"
+            onerror="this.style.display='none';"
+        >
+
+        <div class="brand">
+            Church<span>Stat</span>
+        </div>
+
+        <p class="slogan">
+            Les statistiques de vos cultes,
+            simplement et professionnellement.
+        </p>
+
+        <button
+            class="primary-btn"
+            onclick="showLogin()"
+        >
+            Se connecter
+        </button>
+
+        <button
+            class="secondary-btn"
+            onclick="showRegister()"
+        >
+            Créer un compte
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     CONNEXION
+================================================== -->
+
+<section id="login" class="auth-page">
+
+    <div class="auth-box">
+
+        <img
+            id="loginLogo"
+            class="auth-logo"
+            src="logo-eglise.png"
+            alt="Logo"
+            onerror="this.style.display='none';"
+        >
+
+        <h1 class="auth-title">
+            Bienvenue
+        </h1>
+
+        <p class="auth-subtitle">
+            Connectez-vous à votre espace ChurchStat.
+        </p>
+
+        <div class="form-card">
+
+            <div class="field">
+                <label>Adresse e-mail</label>
+                <input id="loginEmail" type="email" placeholder="exemple@email.com">
+            </div>
+
+            <div class="field">
+                <label>Mot de passe</label>
+                <input id="loginPassword" type="password" placeholder="Votre mot de passe">
+            </div>
+
+            <button class="primary-btn" onclick="login()">
+                Se connecter
+            </button>
+
+        </div>
+
+        <button class="small-link" onclick="showRegister()">
+            Créer un nouveau compte
+        </button>
+
+        <button class="small-link" style="color:var(--ink)" onclick="showHome()">
+            ← Retour à l'accueil
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     INSCRIPTION
+================================================== -->
+
+<section id="register" class="auth-page">
+
+    <div class="auth-box">
+
+        <img
+            id="registerLogo"
+            class="auth-logo"
+            src="logo-eglise.png"
+            alt="Logo"
+            onerror="this.style.display='none';"
+        >
+
+        <h1 class="auth-title">
+            Créer votre compte
+        </h1>
+
+        <p class="auth-subtitle">
+            Configurez votre espace d'église.
+        </p>
+
+        <div class="form-card">
+
+            <div class="field">
+                <label>Nom de l'église</label>
+                <input id="churchName" type="text" placeholder="Ex : Mon église">
+            </div>
+
+            <div class="logo-upload">
+
+                <img id="logoPreview" class="logo-preview" alt="Aperçu du logo">
+
+                <div style="margin-bottom:10px;font-weight:700;font-size:13.5px;">
+                    Logo de l'église
+                </div>
+
+                <label class="upload-button">
+                    Choisir une image
+                    <input type="file" id="churchLogo" accept="image/png,image/jpeg,image/webp" onchange="previewLogo(event)">
+                </label>
+
+                <div style="font-size:11px;color:var(--ink-soft);margin-top:8px;">
+                    PNG, JPG ou WEBP
+                </div>
+
+            </div>
+
+            <div class="field">
+                <label>Palette de couleurs de l'église</label>
+            </div>
+
+            <div id="paletteGrid" class="palette-grid"></div>
+
+            <div class="field">
+                <label>Nom du responsable</label>
+                <input id="responsibleName" type="text" placeholder="Ex : Jean Dupont">
+            </div>
+
+            <div class="field">
+                <label>Adresse e-mail</label>
+                <input id="registerEmail" type="email" placeholder="exemple@email.com">
+            </div>
+
+            <div class="field">
+                <label>Mot de passe</label>
+                <input id="registerPassword" type="password" placeholder="Créer un mot de passe">
+            </div>
+
+            <button class="primary-btn" onclick="register()">
+                Créer mon compte
+            </button>
+
+        </div>
+
+        <button class="small-link" onclick="showLogin()">
+            J'ai déjà un compte
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     MES CULTES
+================================================== -->
+
+<section id="services-page" class="app-page">
+
+    <header class="topbar">
+        <div class="topbar-content">
+            <div class="app-brand">
+                <img id="appLogo" src="logo-eglise.png" alt="Logo">
+                Church<span>Stat</span>
+            </div>
+            <button class="menu-button" onclick="openMenu()">☰</button>
+        </div>
+    </header>
+
+    <main class="content">
+
+        <div class="church-header">
+            <img id="churchHeaderLogo" src="logo-eglise.png" alt="Logo">
+            <div>
+                <small>ÉGLISE</small>
+                <h1 id="churchHeaderName">Mon église</h1>
+            </div>
+        </div>
+
+        <h1 class="page-title">Mes cultes</h1>
+
+        <p class="page-description">
+            Retrouvez toutes les statistiques
+            enregistrées de votre église.
+        </p>
+
+        <button class="new-button" onclick="showForm()">
+            + Enregistrer un nouveau culte
+        </button>
+
+        <div id="servicesList" class="services-list"></div>
+
+    </main>
+
+</section>
+
+
+<!-- ==================================================
+     FORMULAIRE CULTE
+================================================== -->
+
+<section id="form-page" class="app-page">
+
+    <header class="topbar">
+        <div class="topbar-content">
+            <div class="app-brand">
+                <img id="formLogo" src="logo-eglise.png" alt="Logo">
+                Church<span>Stat</span>
+            </div>
+            <button class="menu-button" onclick="openMenu()">☰</button>
+        </div>
+    </header>
+
+    <main class="content">
+
+        <button class="back-button" onclick="showServices()">← Retour à mes cultes</button>
+
+        <h1 class="form-title">Nouveau culte</h1>
+
+        <p class="page-description">Enregistrez les informations du culte.</p>
+
+        <div class="form-card">
+
+            <div class="field">
+                <label>Nom du culte</label>
+                <input id="serviceName" type="text" placeholder="Ex : Culte dominical">
+            </div>
+
+            <div class="field">
+                <label>Nom du prédicateur</label>
+                <input id="preacherName" type="text" placeholder="Ex : Pasteur Jean Dupont">
+            </div>
+
+            <div class="field">
+                <label>Titre du message prêché</label>
+                <input id="messageTitle" type="text" placeholder="Ex : La foi qui déplace les montagnes">
+            </div>
+
+            <div class="field">
+                <label>Nom de la personne qui fait la statistique</label>
+                <input id="recordedBy" type="text" placeholder="Ex : Marie Koffi">
+            </div>
+
+            <div id="themesInfo" class="theme-info"></div>
+
+            <h3 class="section-title">Horaire</h3>
+
+            <div class="two-columns">
+                <div class="field">
+                    <label>Date</label>
+                    <input id="serviceDate" type="date">
+                </div>
+                <div class="field">
+                    <label>Heure de début</label>
+                    <input id="startTime" type="time">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Heure de fin</label>
+                <input id="endTime" type="time">
+            </div>
+
+            <h3 class="section-title">Participants</h3>
+
+            <div class="number-grid">
+                <div class="field">
+                    <label>Hommes</label>
+                    <input id="men" type="number" min="0" value="0" oninput="calculateTotal()">
+                </div>
+                <div class="field">
+                    <label>Femmes</label>
+                    <input id="women" type="number" min="0" value="0" oninput="calculateTotal()">
+                </div>
+                <div class="field">
+                    <label>Garçons</label>
+                    <input id="boys" type="number" min="0" value="0" oninput="calculateTotal()">
+                </div>
+                <div class="field">
+                    <label>Filles</label>
+                    <input id="girls" type="number" min="0" value="0" oninput="calculateTotal()">
+                </div>
+            </div>
+
+            <div class="total-box">
+                <small>TOTAL DES PARTICIPANTS</small>
+                <strong id="totalPeople">0</strong>
+            </div>
+
+            <h3 class="section-title">Recettes</h3>
+
+            <div class="number-grid">
+                <div class="field">
+                    <label>Action de grâce</label>
+                    <input id="offeringGrace" type="number" min="0" value="0" oninput="calculateOfferingsTotal()">
+                </div>
+                <div class="field">
+                    <label>Offrande</label>
+                    <input id="offeringGift" type="number" min="0" value="0" oninput="calculateOfferingsTotal()">
+                </div>
+                <div class="field">
+                    <label>Dîme</label>
+                    <input id="offeringTithe" type="number" min="0" value="0" oninput="calculateOfferingsTotal()">
+                </div>
+                <div class="field">
+                    <label>Sacrifice de Shiloh</label>
+                    <input id="offeringShiloh" type="number" min="0" value="0" oninput="calculateOfferingsTotal()">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Aide aux nouveaux venus</label>
+                <input id="offeringNewcomers" type="number" min="0" value="0" oninput="calculateOfferingsTotal()">
+            </div>
+
+            <div class="total-box">
+                <small>TOTAL DES RECETTES</small>
+                <strong id="totalOfferings">0</strong>
+            </div>
+
+            <h3 class="section-title">Véhicules</h3>
+
+            <div class="number-grid">
+                <div class="field">
+                    <label>Motos</label>
+                    <input id="motorcycles" type="number" min="0" value="0">
+                </div>
+                <div class="field">
+                    <label>Voitures</label>
+                    <input id="cars" type="number" min="0" value="0">
+                </div>
+            </div>
+
+            <button id="saveButton" class="save-button" onclick="saveService()">
+                Enregistrer le culte
+            </button>
+
+        </div>
+
+    </main>
+
+</section>
+
+
+<!-- ==================================================
+     PARAMÈTRES
+================================================== -->
+
+<section id="settings-page" class="app-page">
+
+    <header class="topbar">
+        <div class="topbar-content">
+            <div class="app-brand">
+                <img id="settingsLogo" src="logo-eglise.png" alt="Logo">
+                Church<span>Stat</span>
+            </div>
+            <button class="menu-button" onclick="openMenu()">☰</button>
+        </div>
+    </header>
+
+    <main class="content">
+
+        <button class="back-button" onclick="showServices()">← Retour à mes cultes</button>
+
+        <h1 class="form-title">Paramètres</h1>
+
+        <p class="page-description">
+            Ces thèmes sont définis une seule fois et
+            s'appliquent automatiquement à chaque nouveau culte enregistré.
+        </p>
+
+        <div class="form-card">
+
+            <div class="field">
+                <label>Thème du mois</label>
+                <input id="settingsMonthlyTheme" type="text" placeholder="Ex : La foi en action">
+            </div>
+
+            <div class="field">
+                <label>Thème de l'année</label>
+                <input id="settingsYearlyTheme" type="text" placeholder="Ex : Année de la moisson">
+            </div>
+
+            <button class="save-button" onclick="saveSettings()">
+                Enregistrer les paramètres
+            </button>
+
+        </div>
+
+    </main>
+
+</section>
+
+
+<!-- ==================================================
+     DETAIL
+================================================== -->
+
+<section id="detail-page" class="app-page">
+
+    <header class="topbar">
+        <div class="topbar-content">
+            <div class="app-brand">
+                <img id="detailTopLogo" src="logo-eglise.png" alt="Logo">
+                Church<span>Stat</span>
+            </div>
+            <button class="menu-button" onclick="openMenu()">☰</button>
+        </div>
+    </header>
+
+    <main class="content">
+        <button class="back-button" onclick="showServices()">← Retour à mes cultes</button>
+        <div id="serviceDetails"></div>
+    </main>
+
+</section>
+
+
+<!-- ==================================================
+     MENU
+================================================== -->
+
+<div id="menuOverlay" class="menu-overlay" onclick="closeMenuOutside(event)">
+
+    <div class="side-menu">
+
+        <div class="menu-header">
+            <div class="menu-church">
+                <img id="menuLogo" src="logo-eglise.png" alt="Logo">
+                <div>
+                    <strong id="menuChurchName">Mon église</strong>
+                    <small>ChurchStat</small>
+                </div>
+            </div>
+            <button class="close-menu" onclick="closeMenu()">×</button>
+        </div>
+
+        <button class="menu-item active" onclick="showServices();closeMenu();">⛪&nbsp; Mes cultes</button>
+        <button class="menu-item" onclick="showForm();closeMenu();">＋&nbsp; Nouveau culte</button>
+        <button class="menu-item" onclick="showSettings();closeMenu();">⚙️&nbsp; Paramètres</button>
+        <button class="menu-item" onclick="logout();closeMenu();">⇥&nbsp; Déconnexion</button>
+
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- ==================================================
+     FIREBASE — connexion uniquement, pour test.
+     La logique de l'app (localStorage) n'est pas encore
+     remplacée : ceci prépare seulement le terrain.
+================================================== -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<!-- ==================================================
+     FIREBASE — connexion uniquement, pour test.
+     La logique de l'app (localStorage) n'est pas encore
+     remplacée : ceci prépare seulement le terrain.
+     Version "compat" (scripts classiques) : fonctionne
+     même en ouvrant le fichier directement sur le téléphone.
+================================================== -->
+<script>
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAQ0apfC46UMGaAW9kKWDjvV6tk2UPVGkc",
+        authDomain: "churchstat.firebaseapp.com",
+        projectId: "churchstat",
+        storageBucket: "churchstat.firebasestorage.app",
+        messagingSenderId: "590444910276",
+        appId: "1:590444910276:web:780720253f536d0cac5b91"
+    };
+
+    try{
+
+        const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+        // rendus disponibles pour le reste du code
+        window.firebaseApp = firebaseApp;
+        window.firebaseAuth = firebase.auth();
+        window.firebaseDb = firebase.firestore();
+
+        const banner = document.createElement("div");
+        banner.textContent = "✅ Firebase connecté";
+        banner.style.cssText = "position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;z-index:99999;font-family:sans-serif;";
+        document.body.appendChild(banner);
+        setTimeout(function(){ banner.remove(); }, 4000);
+
+    }catch(error){
+
+        const banner = document.createElement("div");
+        banner.textContent = "❌ Erreur Firebase : " + error.message;
+        banner.style.cssText = "position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#c40711;color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;z-index:99999;font-family:sans-serif;max-width:90%;text-align:center;";
+        document.body.appendChild(banner);
+
+    }
+
+</script>
+
+<script>
+
+/* ==================================================
+   VARIABLES
+================================================== */
+
+let currentServiceId = null;
+let editingServiceId = null;
+
+let account = null;
+
+const defaultLogo = "logo-eglise.png";
+
+/* ==================================================
+   PALETTES DE COULEURS
+   [fond, accent, (couleur sombre optionnelle)]
+   Avec 2 couleurs seulement, la couleur sombre par
+   défaut (#151515) est utilisée pour les textes/en-têtes.
+================================================== */
+
+const PALETTES = [
+    { id:"classique",   name:"Classique",    colors:["#ffffff","#e50914","#111111"] },
+    { id:"ocean",        name:"Océan",        colors:["#ffffff","#0d6efd","#0a1930"] },
+    { id:"emeraude",     name:"Émeraude",     colors:["#ffffff","#10b981","#052e2b"] },
+    { id:"solaire",      name:"Solaire",      colors:["#fffaf0","#f59e0b","#1f1300"] },
+    { id:"amethyste",    name:"Améthyste",    colors:["#ffffff","#7c3aed","#1a0933"] },
+    { id:"corail",       name:"Corail",       colors:["#fff5f2","#fb5607","#2b0a02"] },
+    { id:"saphir",       name:"Saphir",       colors:["#f5f9ff","#2563eb","#05122e"] },
+    { id:"foret",        name:"Forêt",        colors:["#f6faf5","#16a34a","#062611"] },
+    { id:"rubis",        name:"Rubis",        colors:["#fff5f6","#d90429","#1a0206"] },
+    { id:"or-nuit",      name:"Or & Nuit",    colors:["#fffdf5","#c9a227","#14110a"] },
+    { id:"ardoise",      name:"Ardoise",      colors:["#ffffff","#334155"] },
+    { id:"ciel",         name:"Ciel",         colors:["#ffffff","#0ea5e9"] },
+    { id:"menthe",       name:"Menthe",       colors:["#ffffff","#14b8a6"] },
+    { id:"prune",        name:"Prune",        colors:["#ffffff","#a21caf"] },
+    { id:"sable",        name:"Sable",        colors:["#fffaf3","#b45309"] },
+    { id:"rose-poudre",  name:"Rose poudré",  colors:["#fff5f8","#db2777"] },
+    { id:"indigo",       name:"Indigo",       colors:["#ffffff","#4338ca"] },
+    { id:"olive",        name:"Olive",        colors:["#f8faf5","#65772e"] },
+    { id:"bordeaux",     name:"Bordeaux",     colors:["#ffffff","#7f1d1d"] },
+    { id:"anthracite",   name:"Anthracite",   colors:["#f4f4f5","#f43f5e"] }
+];
+
+let selectedPaletteId = "classique";
+
+
+/* ==================================================
+   ACCÈS AU STOCKAGE
+   (regroupé ici pour préparer le passage à Supabase :
+   seules ces deux fonctions changeront plus tard)
+================================================== */
+
+let servicesCache = [];
+
+function getServices(){
+
+    return servicesCache;
+
+}
+
+function loadServicesFromFirestore(callback){
+
+    if(!account || !account.uid || !window.firebaseDb){
+        servicesCache = [];
+        if(callback){ callback(); }
+        return;
+    }
+
+    window.firebaseDb.collection("churches").doc(account.uid).collection("services").get()
+
+        .then(function(snapshot){
+
+            servicesCache = snapshot.docs.map(function(doc){
+                const data = doc.data();
+                data.id = doc.id;
+                return data;
+            });
+
+            if(callback){ callback(); }
+
+        })
+
+        .catch(function(error){
+            alert("Erreur de chargement des cultes : " + translateFirebaseError(error));
+            servicesCache = [];
+            if(callback){ callback(); }
+        });
+
+}
+
+
+/* ==================================================
+   PALETTE DE COULEURS
+================================================== */
+
+function shadeColor(hex, percent){
+
+    hex = hex.replace("#","");
+
+    if(hex.length === 3){
+        hex = hex.split("").map(function(c){ return c + c; }).join("");
+    }
+
+    const num = parseInt(hex, 16);
+
+    let r = (num >> 16) + Math.round(2.55 * percent);
+    let g = ((num >> 8) & 0x00FF) + Math.round(2.55 * percent);
+    let b = (num & 0x0000FF) + Math.round(2.55 * percent);
+
+    r = Math.min(255, Math.max(0, r));
+    g = Math.min(255, Math.max(0, g));
+    b = Math.min(255, Math.max(0, b));
+
+    return "#" + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+
+}
+
+function getPaletteById(id){
+
+    return PALETTES.find(function(p){ return p.id === id; }) || PALETTES[0];
+
+}
+
+function applyPalette(palette){
+
+    const root = document.documentElement;
+    const bg = palette.colors[0];
+    const accent = palette.colors[1];
+
+    // avec 2 couleurs seulement, on assombrit l'accent lui-même
+    // au lieu d'imposer un noir neutre qui ne fait pas partie du choix
+    const dark = palette.colors.length === 3 ? palette.colors[2] : shadeColor(accent, -60);
+
+    root.style.setProperty("--paper", bg);
+    root.style.setProperty("--red", accent);
+    root.style.setProperty("--red-dark", shadeColor(accent, -15));
+    root.style.setProperty("--ink", dark);
+    root.style.setProperty("--floor", shadeColor(bg, -3));
+    root.style.setProperty("--accent-tint", shadeColor(accent, 88));
+
+}
+
+function renderPaletteGrid(){
+
+    const grid = document.getElementById("paletteGrid");
+
+    if(!grid){
+        return;
+    }
+
+    grid.innerHTML = "";
+
+    PALETTES.forEach(function(palette){
+
+        const isActive = palette.id === selectedPaletteId;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "palette-swatch" + (isActive ? " active" : "");
+        button.onclick = function(){ selectPalette(palette.id); };
+
+        const dotsHTML = palette.colors.map(function(color){
+            return '<span style="background:' + color + '"></span>';
+        }).join("");
+
+        button.innerHTML =
+            '<span class="palette-dots">' + dotsHTML + '</span>' +
+            '<span class="palette-name">' + escapeHTML(palette.name) + '</span>';
+
+        grid.appendChild(button);
+
+    });
+
+}
+
+function selectPalette(id){
+
+    selectedPaletteId = id;
+    applyPalette(getPaletteById(id));
+    renderPaletteGrid();
+
+}
+
+
+/* ==================================================
+   DÉMARRAGE
+================================================== */
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    setTimeout(function(){
+
+        const splash = document.getElementById("splash");
+
+        if(splash){
+            splash.style.display = "none";
+        }
+
+        initFirebaseSession();
+
+    }, 2200);
+
+});
+
+function initFirebaseSession(){
+
+    if(!window.firebaseAuth){
+        showHome();
+        return;
+    }
+
+    window.firebaseAuth.onAuthStateChanged(function(user){
+
+        if(!user){
+            showHome();
+            return;
+        }
+
+        loadProfileFromFirestore(user.uid, function(profile){
+
+            if(!profile){
+                window.firebaseAuth.signOut();
+                showHome();
+                return;
+            }
+
+            account = profile;
+            account.uid = user.uid;
+            applyAccountData();
+
+            loadServicesFromFirestore(function(){
+                showServices();
+            });
+
+        });
+
+    });
+
+}
+
+
+/* ==================================================
+   CACHER LES PAGES / NAVIGATION
+================================================== */
+
+function hideAll(){
+
+    const pages = ["home","login","register","services-page","form-page","detail-page","settings-page"];
+
+    pages.forEach(function(id){
+
+        const element = document.getElementById(id);
+
+        if(element){
+            element.style.display = "none";
+            element.classList.remove("page-enter");
+        }
+
+    });
+
+}
+
+function revealPage(id, display){
+
+    const element = document.getElementById(id);
+
+    element.style.display = display;
+
+    // relance l'animation d'entrée à chaque navigation
+    void element.offsetWidth;
+    element.classList.add("page-enter");
+
+}
+
+function showHome(){
+    hideAll();
+    revealPage("home","flex");
+}
+
+function showLogin(){
+    hideAll();
+    revealPage("login","flex");
+}
+
+function showRegister(){
+    hideAll();
+    revealPage("register","flex");
+    selectedPaletteId = "classique";
+    applyPalette(getPaletteById(selectedPaletteId));
+    renderPaletteGrid();
+}
+
+function showServices(){
+    hideAll();
+    revealPage("services-page","block");
+    applyAccountData();
+    updateServicesList();
+}
+
+function showForm(){
+    hideAll();
+    revealPage("form-page","block");
+    displayThemesInfo();
+}
+
+function showSettings(){
+    hideAll();
+    revealPage("settings-page","block");
+    document.getElementById("settingsMonthlyTheme").value = (account && account.monthlyTheme) || "";
+    document.getElementById("settingsYearlyTheme").value = (account && account.yearlyTheme) || "";
+}
+
+function saveSettings(){
+
+    if(!account || !account.uid){
+        return;
+    }
+
+    const monthlyTheme = document.getElementById("settingsMonthlyTheme").value.trim();
+    const yearlyTheme = document.getElementById("settingsYearlyTheme").value.trim();
+
+    window.firebaseDb.collection("churches").doc(account.uid).update({
+        monthlyTheme: monthlyTheme,
+        yearlyTheme: yearlyTheme
+    }).then(function(){
+
+        account.monthlyTheme = monthlyTheme;
+        account.yearlyTheme = yearlyTheme;
+
+        alert("Paramètres enregistrés !");
+
+        showServices();
+
+    }).catch(function(error){
+        alert("Erreur : " + translateFirebaseError(error));
+    });
+
+}
+
+function displayThemesInfo(){
+
+    const box = document.getElementById("themesInfo");
+
+    if(!box){
+        return;
+    }
+
+    const monthly = (account && account.monthlyTheme) || "Non défini";
+    const yearly = (account && account.yearlyTheme) || "Non défini";
+
+    box.innerHTML =
+        "Thème du mois : <strong>" + escapeHTML(monthly) + "</strong><br>" +
+        "Thème de l'année : <strong>" + escapeHTML(yearly) + "</strong><br>" +
+        "Modifiable dans le menu ⚙️ Paramètres.";
+
+}
+
+function showDetail(id){
+    currentServiceId = id;
+    hideAll();
+    revealPage("detail-page","block");
+    displayServiceDetail(id);
+}
+
+
+/* ==================================================
+   LOGO
+================================================== */
+
+function previewLogo(event){
+
+    const file = event.target.files[0];
+
+    if(!file){
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        const preview = document.getElementById("logoPreview");
+        preview.src = e.target.result;
+        preview.style.display = "block";
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* ==================================================
+   INSCRIPTION
+================================================== */
+
+function register(){
+
+    const churchName = document.getElementById("churchName").value.trim();
+    const responsibleName = document.getElementById("responsibleName").value.trim();
+    const email = document.getElementById("registerEmail").value.trim();
+    const password = document.getElementById("registerPassword").value.trim();
+    const logoFile = document.getElementById("churchLogo").files[0];
+
+    if(!churchName || !responsibleName || !email || !password){
+        alert("Veuillez remplir tous les champs.");
+        return;
+    }
+
+    if(password.length < 6){
+        alert("Le mot de passe doit contenir au moins 6 caractères.");
+        return;
+    }
+
+    if(logoFile){
+
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+            createAccount(churchName, responsibleName, email, password, e.target.result);
+        };
+
+        reader.readAsDataURL(logoFile);
+
+    }else{
+
+        createAccount(churchName, responsibleName, email, password, defaultLogo);
+
+    }
+
+}
+
+function createAccount(churchName, responsibleName, email, password, logo){
+
+    if(!window.firebaseAuth || !window.firebaseDb){
+        alert("Firebase n'est pas connecté. Vérifie ta connexion internet et réessaie.");
+        return;
+    }
+
+    window.firebaseAuth.createUserWithEmailAndPassword(email, password)
+
+        .then(function(credential){
+
+            const uid = credential.user.uid;
+
+            const profile = {
+                churchName: churchName,
+                responsibleName: responsibleName,
+                email: email,
+                logo: logo,
+                paletteId: selectedPaletteId,
+                monthlyTheme: "",
+                yearlyTheme: ""
+            };
+
+            return window.firebaseDb.collection("churches").doc(uid).set(profile).then(function(){
+
+                account = profile;
+                account.uid = uid;
+
+                alert("Compte créé avec succès !");
+
+                applyAccountData();
+                servicesCache = [];
+                showServices();
+
+            });
+
+        })
+
+        .catch(function(error){
+            alert("Erreur : " + translateFirebaseError(error));
+        });
+
+}
+
+
+/* ==================================================
+   CONNEXION / DÉCONNEXION
+================================================== */
+
+function login(){
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+
+    if(!email || !password){
+        alert("Veuillez remplir l'adresse e-mail et le mot de passe.");
+        return;
+    }
+
+    if(!window.firebaseAuth){
+        alert("Firebase n'est pas connecté. Vérifie ta connexion internet et réessaie.");
+        return;
+    }
+
+    window.firebaseAuth.signInWithEmailAndPassword(email, password)
+
+        .then(function(credential){
+
+            loadProfileFromFirestore(credential.user.uid, function(profile){
+
+                if(!profile){
+                    alert("Profil d'église introuvable pour ce compte.");
+                    return;
+                }
+
+                account = profile;
+                account.uid = credential.user.uid;
+
+                applyAccountData();
+
+                loadServicesFromFirestore(function(){
+                    showServices();
+                });
+
+            });
+
+        })
+
+        .catch(function(error){
+            alert("Erreur : " + translateFirebaseError(error));
+        });
+
+}
+
+function logout(){
+
+    if(window.firebaseAuth){
+        window.firebaseAuth.signOut();
+    }
+
+    account = null;
+    servicesCache = [];
+    showHome();
+
+}
+
+
+/* ==================================================
+   DONNÉES ÉGLISE
+================================================== */
+
+function loadProfileFromFirestore(uid, callback){
+
+    if(!window.firebaseDb){
+        callback(null);
+        return;
+    }
+
+    window.firebaseDb.collection("churches").doc(uid).get()
+
+        .then(function(doc){
+            callback(doc.exists ? doc.data() : null);
+        })
+
+        .catch(function(){
+            callback(null);
+        });
+
+}
+
+function translateFirebaseError(error){
+
+    const messages = {
+        "auth/email-already-in-use": "Cette adresse e-mail est déjà utilisée par un compte.",
+        "auth/invalid-email": "Adresse e-mail invalide.",
+        "auth/weak-password": "Mot de passe trop faible (6 caractères minimum).",
+        "auth/user-not-found": "Aucun compte ne correspond à cette adresse e-mail.",
+        "auth/wrong-password": "Mot de passe incorrect.",
+        "auth/invalid-credential": "E-mail ou mot de passe incorrect.",
+        "auth/network-request-failed": "Problème de connexion internet. Réessaie."
+    };
+
+    return messages[error.code] || error.message;
+
+}
+
+function applyAccountData(){
+
+    if(!account){
+        return;
+    }
+
+    const logo = account.logo || defaultLogo;
+
+    const ids = [
+        "homeLogo","loginLogo","registerLogo","appLogo","formLogo",
+        "detailTopLogo","menuLogo","churchHeaderLogo","splashLogo","settingsLogo"
+    ];
+
+    ids.forEach(function(id){
+        const element = document.getElementById(id);
+        if(element){
+            element.src = logo;
+        }
+    });
+
+    const churchHeaderName = document.getElementById("churchHeaderName");
+    if(churchHeaderName){
+        churchHeaderName.textContent = account.churchName;
+    }
+
+    const menuChurchName = document.getElementById("menuChurchName");
+    if(menuChurchName){
+        menuChurchName.textContent = account.churchName;
+    }
+
+    applyPalette(getPaletteById(account.paletteId || "classique"));
+
+}
+
+
+/* ==================================================
+   MENU
+================================================== */
+
+function openMenu(){
+    document.getElementById("menuOverlay").style.display = "block";
+}
+
+function closeMenu(){
+    document.getElementById("menuOverlay").style.display = "none";
+}
+
+function closeMenuOutside(event){
+    if(event.target === document.getElementById("menuOverlay")){
+        closeMenu();
+    }
+}
+
+
+/* ==================================================
+   TOTAL / DURÉE
+================================================== */
+
+function calculateTotal(){
+
+    const men = Number(document.getElementById("men").value) || 0;
+    const women = Number(document.getElementById("women").value) || 0;
+    const boys = Number(document.getElementById("boys").value) || 0;
+    const girls = Number(document.getElementById("girls").value) || 0;
+
+    document.getElementById("totalPeople").textContent = men + women + boys + girls;
+
+}
+
+function calculateOfferingsTotal(){
+
+    const grace = Number(document.getElementById("offeringGrace").value) || 0;
+    const gift = Number(document.getElementById("offeringGift").value) || 0;
+    const tithe = Number(document.getElementById("offeringTithe").value) || 0;
+    const shiloh = Number(document.getElementById("offeringShiloh").value) || 0;
+    const newcomers = Number(document.getElementById("offeringNewcomers").value) || 0;
+
+    document.getElementById("totalOfferings").textContent = grace + gift + tithe + shiloh + newcomers;
+
+}
+
+function calculateDuration(start, end){
+
+    if(!start || !end){
+        return "Non renseignée";
+    }
+
+    const startParts = start.split(":");
+    const endParts = end.split(":");
+
+    let startMinutes = Number(startParts[0]) * 60 + Number(startParts[1]);
+    let endMinutes = Number(endParts[0]) * 60 + Number(endParts[1]);
+
+    if(endMinutes < startMinutes){
+        endMinutes += 1440;
+    }
+
+    const difference = endMinutes - startMinutes;
+    const hours = Math.floor(difference / 60);
+    const minutes = difference % 60;
+
+    if(hours === 0){
+        return minutes + " min";
+    }
+
+    if(minutes === 0){
+        return hours + "h";
+    }
+
+    return hours + "h" + minutes;
+
+}
+
+
+/* ==================================================
+   ENREGISTRER / MODIFIER / SUPPRIMER
+================================================== */
+
+function getOfferingsFromForm(){
+
+    return {
+        grace: Number(document.getElementById("offeringGrace").value) || 0,
+        gift: Number(document.getElementById("offeringGift").value) || 0,
+        tithe: Number(document.getElementById("offeringTithe").value) || 0,
+        shiloh: Number(document.getElementById("offeringShiloh").value) || 0,
+        newcomers: Number(document.getElementById("offeringNewcomers").value) || 0
+    };
+
+}
+
+function sumOfferings(offerings){
+
+    return offerings.grace + offerings.gift + offerings.tithe + offerings.shiloh + offerings.newcomers;
+
+}
+
+function saveService(){
+
+    const serviceName = document.getElementById("serviceName").value.trim();
+    const preacherName = document.getElementById("preacherName").value.trim();
+    const date = document.getElementById("serviceDate").value;
+    const start = document.getElementById("startTime").value;
+    const end = document.getElementById("endTime").value;
+
+    if(!serviceName || !preacherName || !date){
+        alert("Veuillez remplir le nom du culte, le prédicateur et la date.");
+        return;
+    }
+
+    const offerings = getOfferingsFromForm();
+
+    const service = {
+        serviceName: serviceName,
+        preacherName: preacherName,
+        messageTitle: document.getElementById("messageTitle").value.trim(),
+        recordedBy: document.getElementById("recordedBy").value.trim(),
+        monthlyTheme: (account && account.monthlyTheme) || "",
+        yearlyTheme: (account && account.yearlyTheme) || "",
+        date: date,
+        startTime: start,
+        endTime: end,
+        duration: calculateDuration(start, end),
+        men: Number(document.getElementById("men").value) || 0,
+        women: Number(document.getElementById("women").value) || 0,
+        boys: Number(document.getElementById("boys").value) || 0,
+        girls: Number(document.getElementById("girls").value) || 0,
+        motorcycles: Number(document.getElementById("motorcycles").value) || 0,
+        cars: Number(document.getElementById("cars").value) || 0,
+        offerings: offerings
+    };
+
+    service.total = service.men + service.women + service.boys + service.girls;
+    service.offeringsTotal = sumOfferings(offerings);
+
+    if(!account || !account.uid || !window.firebaseDb){
+        alert("Firebase n'est pas connecté. Vérifie ta connexion internet et réessaie.");
+        return;
+    }
+
+    window.firebaseDb.collection("churches").doc(account.uid).collection("services").add(service)
+
+        .then(function(docRef){
+
+            service.id = docRef.id;
+            servicesCache.push(service);
+
+            alert("Culte enregistré avec succès !");
+
+            clearForm();
+            showServices();
+
+        })
+
+        .catch(function(error){
+            alert("Erreur : " + translateFirebaseError(error));
+        });
+
+}
+
+function updateServicesList(){
+
+    const services = getServices();
+    const container = document.getElementById("servicesList");
+
+    if(!container){
+        return;
+    }
+
+    if(services.length === 0){
+
+        container.innerHTML = `
+            <div class="empty-state">
+                <div style="font-size:38px;margin-bottom:10px;">⛪</div>
+                <h3>Aucun culte enregistré</h3>
+                <p>Enregistrez votre premier culte pour commencer.</p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+    container.innerHTML = "";
+
+    services.slice().reverse().forEach(function(service){
+
+        container.innerHTML += `
+            <div class="service-card" onclick="showDetail('${service.id}')">
+                <div class="service-card-header">
+                    <div>
+                        <h3>${escapeHTML(service.serviceName)}</h3>
+                        <div class="service-date">${formatDate(service.date)}</div>
+                    </div>
+                    <div class="service-arrow">›</div>
+                </div>
+                <div class="service-info">
+                    <span>Prédicateur : <strong>${escapeHTML(service.preacherName)}</strong></span>
+                    <span><strong>${service.total}</strong> participants</span>
+                </div>
+            </div>
+        `;
+
+    });
+
+}
+
+function getSortedServices(){
+
+    return getServices().slice().sort(function(a, b){
+
+        const dateA = new Date((a.date || "1970-01-01") + "T" + (a.startTime || "00:00"));
+        const dateB = new Date((b.date || "1970-01-01") + "T" + (b.startTime || "00:00"));
+
+        if(dateA - dateB !== 0){
+            return dateA - dateB;
+        }
+
+        return a.id - b.id;
+
+    });
+
+}
+
+function getPreviousService(id){
+
+    const sorted = getSortedServices();
+    const index = sorted.findIndex(function(item){ return item.id == id; });
+
+    if(index > 0){
+        return sorted[index - 1];
+    }
+
+    return null;
+
+}
+
+function formatDelta(current, previous){
+
+    const diff = current - previous;
+
+    if(diff === 0){
+        return '<span style="color:var(--ink-soft)">= stable</span>';
+    }
+
+    if(diff > 0){
+        return '<span style="color:#16a34a">▲ +' + diff + '</span>';
+    }
+
+    return '<span style="color:#dc2626">▼ ' + diff + '</span>';
+
+}
+
+function buildMiniBar(label, previousValue, currentValue){
+
+    const maxValue = Math.max(previousValue, currentValue, 1);
+    const prevWidth = Math.round((previousValue / maxValue) * 100);
+    const currWidth = Math.round((currentValue / maxValue) * 100);
+
+    return `
+        <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-bottom:5px;">
+                <span>${escapeHTML(label)}</span>
+                <span>${previousValue} → ${currentValue}</span>
+            </div>
+            <div style="background:var(--floor);border-radius:6px;height:9px;margin-bottom:4px;overflow:hidden;">
+                <div style="width:${prevWidth}%;height:100%;background:#c9c9c9;"></div>
+            </div>
+            <div style="background:var(--floor);border-radius:6px;height:9px;overflow:hidden;">
+                <div style="width:${currWidth}%;height:100%;background:var(--red);"></div>
+            </div>
+        </div>
+    `;
+
+}
+
+function buildEvolutionHTML(service){
+
+    const previous = getPreviousService(service.id);
+
+    if(!previous){
+
+        return `
+            <div class="detail-card full">
+                <div class="detail-card-title">Évolution</div>
+                <p style="font-size:13px;color:var(--ink-soft);">
+                    C'est le premier culte enregistré : pas encore de comparaison possible.
+                </p>
+            </div>
+        `;
+
+    }
+
+    const prevOfferings = previous.offerings || {};
+    const currOfferings = service.offerings || {};
+
+    return `
+        <div class="detail-card full">
+            <div class="detail-card-title">Évolution par rapport au culte précédent (${formatDate(previous.date)})</div>
+
+            ${buildMiniBar("Participants", previous.total || 0, service.total || 0)}
+            ${buildMiniBar("Total des recettes", previous.offeringsTotal || 0, service.offeringsTotal || 0)}
+
+            <div class="detail-row"><span>Participants</span>${formatDelta(service.total || 0, previous.total || 0)}</div>
+            <div class="detail-row"><span>Recettes totales</span>${formatDelta(service.offeringsTotal || 0, previous.offeringsTotal || 0)}</div>
+            <div class="detail-row"><span>Action de grâce</span>${formatDelta(currOfferings.grace || 0, prevOfferings.grace || 0)}</div>
+            <div class="detail-row"><span>Offrande</span>${formatDelta(currOfferings.gift || 0, prevOfferings.gift || 0)}</div>
+            <div class="detail-row"><span>Dîme</span>${formatDelta(currOfferings.tithe || 0, prevOfferings.tithe || 0)}</div>
+            <div class="detail-row"><span>Sacrifice de Shiloh</span>${formatDelta(currOfferings.shiloh || 0, prevOfferings.shiloh || 0)}</div>
+            <div class="detail-row"><span>Aide aux nouveaux venus</span>${formatDelta(currOfferings.newcomers || 0, prevOfferings.newcomers || 0)}</div>
+        </div>
+    `;
+
+}
+
+function displayServiceDetail(id){
+
+    const services = getServices();
+    const service = services.find(function(item){ return item.id == id; });
+
+    if(!service){
+        showServices();
+        return;
+    }
+
+    const logo = account && account.logo ? account.logo : defaultLogo;
+
+    document.getElementById("serviceDetails").innerHTML = `
+
+        <div class="detail-header">
+            <div class="detail-header-content">
+                <img class="detail-logo" src="${logo}" alt="Logo">
+                <small>${escapeHTML(account ? account.churchName : "")}</small>
+                <h1>${escapeHTML(service.serviceName)}</h1>
+                <p>${formatDate(service.date)}</p>
+                <div class="preacher">
+                    <div class="preacher-label">PRÉDICATEUR</div>
+                    <div class="preacher-name">${escapeHTML(service.preacherName)}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+
+            <div class="detail-card">
+                <div class="detail-card-title">Participants</div>
+                <div class="detail-number">${service.total}</div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-title">Durée</div>
+                <div class="detail-number">${service.duration}</div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-title">Motos</div>
+                <div class="detail-number">${service.motorcycles}</div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-title">Voitures</div>
+                <div class="detail-number">${service.cars}</div>
+            </div>
+
+            <div class="detail-card full">
+                <div class="detail-card-title">Informations</div>
+                <div class="detail-row"><span>Message prêché</span><strong>${escapeHTML(service.messageTitle || "—")}</strong></div>
+                <div class="detail-row"><span>Thème du mois</span><strong>${escapeHTML(service.monthlyTheme || "—")}</strong></div>
+                <div class="detail-row"><span>Thème de l'année</span><strong>${escapeHTML(service.yearlyTheme || "—")}</strong></div>
+                <div class="detail-row"><span>Statistique faite par</span><strong>${escapeHTML(service.recordedBy || "—")}</strong></div>
+            </div>
+
+            <div class="detail-card full">
+                <div class="detail-card-title">Répartition des participants</div>
+                <div class="detail-row"><span>Hommes</span><strong>${service.men}</strong></div>
+                <div class="detail-row"><span>Femmes</span><strong>${service.women}</strong></div>
+                <div class="detail-row"><span>Garçons</span><strong>${service.boys}</strong></div>
+                <div class="detail-row"><span>Filles</span><strong>${service.girls}</strong></div>
+            </div>
+
+            <div class="detail-card full">
+                <div class="detail-card-title">Recettes</div>
+                <div class="detail-row"><span>Action de grâce</span><strong>${(service.offerings && service.offerings.grace) || 0}</strong></div>
+                <div class="detail-row"><span>Offrande</span><strong>${(service.offerings && service.offerings.gift) || 0}</strong></div>
+                <div class="detail-row"><span>Dîme</span><strong>${(service.offerings && service.offerings.tithe) || 0}</strong></div>
+                <div class="detail-row"><span>Sacrifice de Shiloh</span><strong>${(service.offerings && service.offerings.shiloh) || 0}</strong></div>
+                <div class="detail-row"><span>Aide aux nouveaux venus</span><strong>${(service.offerings && service.offerings.newcomers) || 0}</strong></div>
+                <div class="detail-row"><span>Total des recettes</span><strong>${service.offeringsTotal || 0}</strong></div>
+            </div>
+
+            <div class="detail-card full">
+                <div class="detail-card-title">Horaire</div>
+                <div class="detail-row"><span>Début</span><strong>${service.startTime || "—"}</strong></div>
+                <div class="detail-row"><span>Fin</span><strong>${service.endTime || "—"}</strong></div>
+                <div class="detail-row"><span>Durée</span><strong>${service.duration}</strong></div>
+            </div>
+
+            ${buildEvolutionHTML(service)}
+
+        </div>
+
+        <button class="pdf-button" onclick="generateServicePDF('${service.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v12"></path>
+                <path d="M7 10l5 5 5-5"></path>
+                <path d="M4 19h16"></path>
+            </svg>
+            Télécharger le rapport PDF
+        </button>
+
+        <div class="action-buttons">
+            <button class="edit-button" onclick="editService('${service.id}')">Modifier</button>
+            <button class="delete-button" onclick="deleteService('${service.id}')">Supprimer</button>
+        </div>
+
+    `;
+
+}
+
+function editService(id){
+
+    const services = getServices();
+    const service = services.find(function(item){ return item.id == id; });
+
+    if(!service){
+        return;
+    }
+
+    document.getElementById("serviceName").value = service.serviceName;
+    document.getElementById("preacherName").value = service.preacherName;
+    document.getElementById("messageTitle").value = service.messageTitle || "";
+    document.getElementById("recordedBy").value = service.recordedBy || "";
+    document.getElementById("serviceDate").value = service.date;
+    document.getElementById("startTime").value = service.startTime;
+    document.getElementById("endTime").value = service.endTime;
+    document.getElementById("men").value = service.men;
+    document.getElementById("women").value = service.women;
+    document.getElementById("boys").value = service.boys;
+    document.getElementById("girls").value = service.girls;
+    document.getElementById("motorcycles").value = service.motorcycles;
+    document.getElementById("cars").value = service.cars;
+
+    const offerings = service.offerings || {};
+    document.getElementById("offeringGrace").value = offerings.grace || 0;
+    document.getElementById("offeringGift").value = offerings.gift || 0;
+    document.getElementById("offeringTithe").value = offerings.tithe || 0;
+    document.getElementById("offeringShiloh").value = offerings.shiloh || 0;
+    document.getElementById("offeringNewcomers").value = offerings.newcomers || 0;
+
+    calculateTotal();
+    calculateOfferingsTotal();
+    displayThemesInfo();
+
+    editingServiceId = id;
+
+    const button = document.getElementById("saveButton");
+    button.textContent = "Enregistrer les modifications";
+    button.onclick = function(){ updateService(id); };
+
+    hideAll();
+    revealPage("form-page","block");
+
+}
+
+function updateService(id){
+
+    const services = getServices();
+    const index = services.findIndex(function(item){ return item.id == id; });
+
+    if(index === -1){
+        return;
+    }
+
+    const offerings = getOfferingsFromForm();
+    const previous = services[index];
+
+    const service = {
+        serviceName: document.getElementById("serviceName").value.trim(),
+        preacherName: document.getElementById("preacherName").value.trim(),
+        messageTitle: document.getElementById("messageTitle").value.trim(),
+        recordedBy: document.getElementById("recordedBy").value.trim(),
+        monthlyTheme: previous.monthlyTheme || "",
+        yearlyTheme: previous.yearlyTheme || "",
+        date: document.getElementById("serviceDate").value,
+        startTime: document.getElementById("startTime").value,
+        endTime: document.getElementById("endTime").value,
+        men: Number(document.getElementById("men").value) || 0,
+        women: Number(document.getElementById("women").value) || 0,
+        boys: Number(document.getElementById("boys").value) || 0,
+        girls: Number(document.getElementById("girls").value) || 0,
+        motorcycles: Number(document.getElementById("motorcycles").value) || 0,
+        cars: Number(document.getElementById("cars").value) || 0,
+        offerings: offerings
+    };
+
+    service.total = service.men + service.women + service.boys + service.girls;
+    service.offeringsTotal = sumOfferings(offerings);
+    service.duration = calculateDuration(service.startTime, service.endTime);
+
+    if(!account || !account.uid || !window.firebaseDb){
+        alert("Firebase n'est pas connecté. Vérifie ta connexion internet et réessaie.");
+        return;
+    }
+
+    window.firebaseDb.collection("churches").doc(account.uid).collection("services").doc(id).set(service)
+
+        .then(function(){
+
+            service.id = id;
+            services[index] = service;
+
+            alert("Modification enregistrée !");
+
+            clearForm();
+            showDetail(id);
+
+        })
+
+        .catch(function(error){
+            alert("Erreur : " + translateFirebaseError(error));
+        });
+
+}
+
+function deleteService(id){
+
+    const confirmation = confirm("Voulez-vous vraiment supprimer ce culte ?");
+
+    if(!confirmation){
+        return;
+    }
+
+    if(!account || !account.uid || !window.firebaseDb){
+        alert("Firebase n'est pas connecté. Vérifie ta connexion internet et réessaie.");
+        return;
+    }
+
+    window.firebaseDb.collection("churches").doc(account.uid).collection("services").doc(id).delete()
+
+        .then(function(){
+
+            servicesCache = servicesCache.filter(function(item){ return item.id != id; });
+
+            alert("Culte supprimé.");
+
+            showServices();
+
+        })
+
+        .catch(function(error){
+            alert("Erreur : " + translateFirebaseError(error));
+        });
+
+}
+
+function clearForm(){
+
+    document.getElementById("serviceName").value = "";
+    document.getElementById("preacherName").value = "";
+    document.getElementById("messageTitle").value = "";
+    document.getElementById("recordedBy").value = "";
+    document.getElementById("serviceDate").value = "";
+    document.getElementById("startTime").value = "";
+    document.getElementById("endTime").value = "";
+    document.getElementById("men").value = 0;
+    document.getElementById("women").value = 0;
+    document.getElementById("boys").value = 0;
+    document.getElementById("girls").value = 0;
+    document.getElementById("motorcycles").value = 0;
+    document.getElementById("cars").value = 0;
+    document.getElementById("offeringGrace").value = 0;
+    document.getElementById("offeringGift").value = 0;
+    document.getElementById("offeringTithe").value = 0;
+    document.getElementById("offeringShiloh").value = 0;
+    document.getElementById("offeringNewcomers").value = 0;
+
+    calculateTotal();
+    calculateOfferingsTotal();
+    resetFormButton();
+
+}
+
+function resetFormButton(){
+
+    const button = document.getElementById("saveButton");
+    button.textContent = "Enregistrer le culte";
+    button.onclick = saveService;
+
+}
+
+
+/* ==================================================
+   EXPORT PDF DU CULTE
+================================================== */
+
+function loadImageAsDataURL(src){
+
+    return new Promise(function(resolve){
+
+        try{
+
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+
+            img.onload = function(){
+
+                try{
+
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.naturalWidth;
+                    canvas.height = img.naturalHeight;
+
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+
+                    resolve(canvas.toDataURL("image/png"));
+
+                }catch(e){
+                    resolve(null);
+                }
+
+            };
+
+            img.onerror = function(){
+                resolve(null);
+            };
+
+            img.src = src;
+
+        }catch(e){
+            resolve(null);
+        }
+
+    });
+
+}
+
+async function generateServicePDF(id){
+
+    if(typeof window.jspdf === "undefined"){
+        alert("Le générateur de PDF n'a pas pu se charger. Vérifiez votre connexion internet et réessayez.");
+        return;
+    }
+
+    const services = getServices();
+    const service = services.find(function(item){ return item.id == id; });
+
+    if(!service){
+        return;
+    }
+
+    const churchName = account ? account.churchName : "ChurchStat";
+    const responsibleName = account ? account.responsibleName : "";
+    const logoSrc = account && account.logo ? account.logo : defaultLogo;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const red = [229, 9, 20];
+    const ink = [19, 19, 19];
+    const grey = [110, 110, 110];
+
+    // bandeau d'en-tête
+    doc.setFillColor(ink[0], ink[1], ink[2]);
+    doc.rect(0, 0, pageWidth, 130, "F");
+
+    doc.setFillColor(red[0], red[1], red[2]);
+    doc.rect(0, 130, pageWidth, 6, "F");
+
+    // logo (si chargeable)
+    const logoData = await loadImageAsDataURL(logoSrc);
+
+    let textX = 48;
+
+    if(logoData){
+
+        try{
+
+            doc.addImage(logoData, "PNG", 48, 34, 62, 62);
+            textX = 126;
+
+        }catch(e){
+            textX = 48;
+        }
+
+    }
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text(churchName.toUpperCase(), textX, 55);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(200, 200, 200);
+    doc.text("Rapport de culte — généré par ChurchStat", textX, 70);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(255, 255, 255);
+    doc.text(service.serviceName, textX, 100);
+
+    // sous-titre : date + prédicateur
+    let y = 168;
+
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text(formatDate(service.date), 48, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(grey[0], grey[1], grey[2]);
+    doc.setFontSize(10);
+    doc.text("Prédicateur : " + service.preacherName, 48, y + 16);
+
+    if(responsibleName){
+        doc.text("Responsable : " + responsibleName, 48, y + 30);
+    }
+
+    y += 56;
+
+    // tableau des statistiques
+    function statRow(label, value, isTotal){
+
+        doc.setDrawColor(230, 230, 230);
+        doc.line(48, y, pageWidth - 48, y);
+
+        y += 22;
+
+        doc.setFont("helvetica", isTotal ? "bold" : "normal");
+        doc.setFontSize(isTotal ? 12 : 11);
+        doc.setTextColor(ink[0], ink[1], ink[2]);
+        doc.text(label, 48, y);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(isTotal ? red[0] : ink[0], isTotal ? red[1] : ink[1], isTotal ? red[2] : ink[2]);
+        doc.text(String(value), pageWidth - 48, y, { align: "right" });
+
+    }
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text("INFORMATIONS", 48, y);
+    y += 10;
+
+    statRow("Message prêché", service.messageTitle || "—");
+    statRow("Thème du mois", service.monthlyTheme || "—");
+    statRow("Thème de l'année", service.yearlyTheme || "—");
+    statRow("Statistique faite par", service.recordedBy || "—");
+
+    y += 30;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text("PARTICIPANTS", 48, y);
+    y += 10;
+
+    statRow("Hommes", service.men);
+    statRow("Femmes", service.women);
+    statRow("Garçons", service.boys);
+    statRow("Filles", service.girls);
+    statRow("Total des participants", service.total, true);
+
+    y += 30;
+
+    const offerings = service.offerings || {};
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text("RECETTES", 48, y);
+    y += 10;
+
+    statRow("Action de grâce", offerings.grace || 0);
+    statRow("Offrande", offerings.gift || 0);
+    statRow("Dîme", offerings.tithe || 0);
+    statRow("Sacrifice de Shiloh", offerings.shiloh || 0);
+    statRow("Aide aux nouveaux venus", offerings.newcomers || 0);
+    statRow("Total des recettes", service.offeringsTotal || 0, true);
+
+    y += 30;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text("VÉHICULES & HORAIRE", 48, y);
+    y += 10;
+
+    statRow("Motos", service.motorcycles);
+    statRow("Voitures", service.cars);
+    statRow("Heure de début", service.startTime || "—");
+    statRow("Heure de fin", service.endTime || "—");
+    statRow("Durée", service.duration, true);
+
+    // pied de page
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    doc.setDrawColor(230, 230, 230);
+    doc.line(48, pageHeight - 56, pageWidth - 48, pageHeight - 56);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(grey[0], grey[1], grey[2]);
+
+    const now = new Date();
+    const generatedOn = now.toLocaleDateString("fr-FR") + " à " + now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+
+    doc.text("Généré le " + generatedOn, 48, pageHeight - 38);
+    doc.text("ChurchStat", pageWidth - 48, pageHeight - 38, { align: "right" });
+
+    const safeName = service.serviceName.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+    doc.save("churchstat-" + safeName + "-" + service.date + ".pdf");
+
+}
+
+
+/* ==================================================
+   FORMAT / SÉCURITÉ
+================================================== */
+
+function formatDate(date){
+
+    if(!date){
+        return "Date non renseignée";
+    }
+
+    const parts = date.split("-");
+
+    if(parts.length !== 3){
+        return date;
+    }
+
+    const months = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+
+    return Number(parts[2]) + " " + months[Number(parts[1]) - 1] + " " + parts[0];
+
+}
+
+function escapeHTML(text){
+
+    if(text === undefined || text === null){
+        return "";
+    }
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+</script>
+
+</body>
+</html>
